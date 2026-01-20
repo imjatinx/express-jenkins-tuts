@@ -1,0 +1,15 @@
+pipeline{
+    trigger{
+        githubPush()
+    }
+
+    stages{
+        stage("print"){
+            steps{
+                script{
+                    echo "Code is being deployed"
+                }
+            }
+        }
+    }
+}
