@@ -5,6 +5,7 @@ pipeline {
         stage('Pre-Build') {
             steps {
                 echo 'Pre-Build...'
+                echo 'Testing trigger CI/CD'
             }
         }
         stage('Build') {
