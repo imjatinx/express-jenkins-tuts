@@ -31,8 +31,9 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          run: sudo su
           script: |
+            sudo su
+            
             docker pull ghcr.io/${{ github.repository_owner }}/express-app:latest
 
             docker stop express-app || true
