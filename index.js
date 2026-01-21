@@ -6,16 +6,16 @@ const PORT = process.env.PORT || 8081
 app.get("/", (req, res) => {
     res.json({
         success: true,
-        message: "CI/CD with GitHub Actions is working. Pipeline test - v1"
+        message: "CI/CD with GitHub Actions is working. Pipeline test - v2"
     })
 })
 
-app.get(`/hello/:user`, (req, res) => {
+app.get(`/:user`, (req, res) => {
     const { user } = req.params;
 
     res.json({
         success: true,
-        message: `Hello ${user.title()}`
+        message: `Hello ${user}`
     })
 })
 
