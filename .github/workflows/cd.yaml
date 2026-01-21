@@ -39,8 +39,8 @@ jobs:
 
             docker run -d \
               --name express-app \
-              -p 80:3000 \
-              -e PORT=3000 \
+              -p 80:5000 \
+              -e PORT=${{ PORT }} \
               -e APP_NAME="CI-CD Express" \
               -e NODE_ENV=production \
               ghcr.io/${{ github.repository_owner }}/express-app:latest
