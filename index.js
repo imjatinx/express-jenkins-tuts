@@ -2,11 +2,15 @@ import express from 'express'
 
 const app = express()
 const PORT = process.env.PORT || 8081
+const APP_NAME = process.env.APP_NAME || "Default Express App"
 
 app.get("/", (req, res) => {
     res.json({
         success: true,
-        message: "CI/CD with GitHub Actions is working. Pipeline test - v2"
+        port: PORT,
+        app: APP_NAME,
+        env: process.env.NODE_ENV || "development",
+        message: "CI/CD with GitHub Actions is working. Pipeline test - v3"
     })
 })
 
@@ -20,5 +24,5 @@ app.get(`/:user`, (req, res) => {
 })
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
+    console.log(`${APP_NAME} running on port ${PORT}`)
 })
