@@ -19,11 +19,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/express-app:latest .
+          docker build -t ghcr.io/${{ github.repository_owner }}/express-app:${{ github.sha }} .
 
       - name: Push Docker image
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/express-app:latest
+          docker push ghcr.io/${{ github.repository_owner }}/express-app:${{ github.sha }}
 
       - name: Deploy to server
         uses: appleboy/ssh-action@v1.0.3
@@ -32,7 +32,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            docker pull ghcr.io/${{ github.repository_owner }}/express-app:latest
+            docker pull ghcr.io/${{ github.repository_owner }}/express-app:${{ github.sha }}
 
             docker stop express-app || true
             docker rm express-app || true
@@ -43,4 +43,4 @@ jobs:
               -e PORT=${{ secrets.PORT }} \
               -e APP_NAME="CI-CD Express" \
               -e NODE_ENV=production \
-              ghcr.io/${{ github.repository_owner }}/express-app:latest
+              ghcr.io/${{ github.repository_owner }}/express-app:${{ github.sha }}
