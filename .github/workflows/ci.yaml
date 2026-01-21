@@ -28,6 +28,6 @@ jobs:
 
       - name: Validate app startup
         run: 
-          node index.js &
+          npm start &
           sleep 5
           kill $!
