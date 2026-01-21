@@ -28,7 +28,7 @@ jobs:
 
       - name: Validate app startup
         run: |
-          node index.js &
+          npm start &
           APP_PID=$!
           sleep 10
           kill $APP_PID
