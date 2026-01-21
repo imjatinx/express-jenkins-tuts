@@ -15,7 +15,7 @@ app.get(`/hello/:user`, (req, res) => {
 
     res.json({
         success: true,
-        message: `Hello ${user.toUpperCase()}`
+        message: `Hello ${user.title()}`
     })
 })
 
