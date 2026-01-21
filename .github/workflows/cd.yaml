@@ -24,3 +24,20 @@ jobs:
       - name: Push Docker image
         run: |
           docker push ghcr.io/${{ github.repository_owner }}/express-app:latest
+
+      - name: Deploy to server
+        uses: appleboy/ssh-actions@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            docker pull ghcr.io/${{ github.repository_owner }}/express-app:latest
+
+            docker stop express-app || true
+            docker rm express-app || true
+
+            docker run -d \
+              --name express-app \
+              -p 80:8081 \
+              ghcr.io/${{ github.repository_owner }}/express-app:latest
