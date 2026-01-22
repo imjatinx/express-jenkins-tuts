@@ -32,8 +32,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io \ 
-            -u ${{ github.actor }} --password-stdin
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
             docker pull ghcr.io/${{ github.repository_owner }}/express-app:${{ github.sha }}
 
