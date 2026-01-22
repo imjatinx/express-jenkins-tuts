@@ -39,7 +39,7 @@ jobs:
 
             docker run -d \
               --name express-app \
-              -p 80:5000 \
+              -p 5000:5000 \
               -e PORT=${{ secrets.PORT }} \
               -e APP_NAME="CI-CD Express" \
               -e NODE_ENV=production \
