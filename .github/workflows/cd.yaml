@@ -44,6 +44,10 @@ jobs:
             echo "Pull image"
             docker pull $IMAGE
 
+            echo "Cleanup any existing GREEN"
+            docker stop express-green || true
+            docker rm express-green || true
+
             echo "Start GREEN"
             docker run -d \
               --name express-green \
