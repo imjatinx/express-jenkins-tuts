@@ -63,8 +63,8 @@ jobs:
               echo "GREEN healthy - switching traffic"
 
               sudo sed -i "s/${BLUE_PORT}/${GREEN_PORT}/" $NGINX_CONF
-              nginx -t
-              nginx -s reload
+              sudo nginx -t
+              sudo nginx -s reload
 
               echo "Remove BLUE"
               docker stop express-blue || true
