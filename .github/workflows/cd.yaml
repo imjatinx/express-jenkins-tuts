@@ -34,7 +34,7 @@ jobs:
             set -e
 
             IMAGE="ghcr.io/${{ github.repository_owner }}/express-app:${{ github.sha }}"
-            NGINX_UPSTREAM_CONF="/etc/nginx/conf.d/app_backend.conf"
+            NGINX_UPSTREAM_CONF="/etc/nginx/conf.d/express_app.conf"
 
             echo "Login to GHCR"
             docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin <<< "${{ secrets.GHCR_TOKEN }}"
@@ -68,9 +68,9 @@ jobs:
             if curl -fs http://127.0.0.1:$GREEN_PORT/health; then
               echo "GREEN healthy — switching traffic"
               
-              sudo printf "upstream express_backend {\n    server 127.0.0.1:%s;\n}\n" \
+              sudo printf "upstream express_app {\n    server 127.0.0.1:%s;\n}\n" \
               "$GREEN_PORT" \
-              | sudo tee /etc/nginx/conf.d/express_backend.conf > /dev/null
+              | sudo tee /etc/nginx/conf.d/express_app.conf
 
               sudo nginx -t
               sudo nginx -s reload
