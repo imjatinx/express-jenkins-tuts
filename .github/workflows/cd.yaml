@@ -12,10 +12,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Login to Github Container Registry
+      - name: Login to GitHub Container Registry
         run: |
-          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io \
-          -u ${{ github.actor }} --password-stdin
+          docker login ghcr.io -u "${{ github.actor }}" --password-stdin <<< "${{ secrets.GHCR_TOKEN }}"
 
       - name: Build Docker image
         run: |
@@ -25,24 +24,56 @@ jobs:
         run: |
           docker push ghcr.io/${{ github.repository_owner }}/express-app:${{ github.sha }}
 
-      - name: Deploy to server
+      - name: Deploy to Server (Blue/Green + Auto Rollback)
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+            set -e
 
-            docker pull ghcr.io/${{ github.repository_owner }}/express-app:${{ github.sha }}
+            IMAGE="ghcr.io/${{ github.repository_owner }}/express-app:${{ github.sha }}"
+            BLUE_PORT=5001
+            GREEN_PORT=5002
+            NGINX_CONF="/etc/nginx/sites-available/express-app"
 
-            docker stop express-app || true
-            docker rm express-app || true
+            echo "Login to GHCR"
+            docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin <<< "${{ secrets.GHCR_TOKEN }}"
 
+            echo "Pull image"
+            docker pull $IMAGE
+
+            echo "Start GREEN"
             docker run -d \
-              --name express-app \
-              -p 127.0.0.1:5000:5000 \
-              -e PORT=${{ secrets.PORT }} \
-              -e APP_NAME="CI-CD Express" \
+              --name express-green \
+              -p 127.0.0.1:${GREEN_PORT}:5000 \
               -e NODE_ENV=production \
-              ghcr.io/${{ github.repository_owner }}/express-app:${{ github.sha }}
+              $IMAGE
+
+            sleep 5
+
+            echo "Health check GREEN"
+            if curl -fs http://127.0.0.1:${GREEN_PORT}/health; then
+              echo "GREEN healthy - switching traffic"
+
+              sed -i "s/${BLUE_PORT}/${GREEN_PORT}/" $NGINX_CONF
+              nginx -t
+              nginx -s reload
+
+              echo "Remove BLUE"
+              docker stop express-blue || true
+              docker rm express-blue || true
+
+              echo "Promote GREEN -> BLUE"
+              docker rename express-green express-blue
+
+              echo "Deployment successful"
+            else
+              echo "GREEN unhealthy - AUTO ROLLBACK"
+
+              docker stop express-green
+              docker rm express-green
+
+              exit 1
+            fi
