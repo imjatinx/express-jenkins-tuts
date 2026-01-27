@@ -5,6 +5,33 @@ on:
     branches: ["main"]
 
 jobs:
+  builds:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Validate app startup
+        run: |
+          npm start &
+          APP_PID=$!
+          sleep 10
+          kill $APP_PID
+
+
   deploy:
     runs-on: ubuntu-latest
 
@@ -33,9 +60,20 @@ jobs:
           script: |
             set -e
 
+            CURRENT_PORT=$(grep -oP 'proxy_pass http://127.0.0.1:\K[0-9]+' $NGINX_CONF)
+            
+            if [ "$CURRENT_PORT" = "5000" ]; then
+              BLUE_PORT=5000
+              GREEN_PORT=5001
+            else
+              BLUE_PORT=5001
+              GREEN_PORT=5000
+            fi
+
+            echo "Current BLUE_PORT=$BLUE_PORT"
+            echo "New GREEN_PORT=$GREEN_PORT"
+
             IMAGE="ghcr.io/${{ github.repository_owner }}/express-app:${{ github.sha }}"
-            BLUE_PORT=5000
-            GREEN_PORT=5001
             NGINX_CONF="/etc/nginx/sites-available/express-app"
 
             echo "Login to GHCR"
