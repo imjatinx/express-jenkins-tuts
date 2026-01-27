@@ -68,11 +68,10 @@ jobs:
             if curl -fs http://127.0.0.1:$GREEN_PORT/health; then
               echo "GREEN healthy — switching traffic"
 
-              sudo bash -c "cat > $NGINX_UPSTREAM_CONF <<EOF
+              sudo tee $NGINX_UPSTREAM_CONF <<EOF
               upstream app_backend {
-                  server 127.0.0.1:$GREEN_PORT;
-              }
-              EOF"
+                server 127.0.0.1:$GREEN_PORT;
+              }EOF
 
               sudo nginx -t
               sudo nginx -s reload
