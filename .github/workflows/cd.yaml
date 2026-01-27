@@ -67,11 +67,10 @@ jobs:
             echo "Health check GREEN"
             if curl -fs http://127.0.0.1:$GREEN_PORT/health; then
               echo "GREEN healthy — switching traffic"
-
-              sudo cat > /etc/nginx/conf.d/express_backend.conf <<EOF
-              upstream express_backend {
-                  server 127.0.0.1:$PORT;
-              }EOF
+              
+              sudo printf "upstream express_backend {\n    server 127.0.0.1:%s;\n}\n" \
+              "$GREEN_PORT" \
+              | sudo tee /etc/nginx/conf.d/express_backend.conf > /dev/null
 
               sudo nginx -t
               sudo nginx -s reload
