@@ -10,7 +10,7 @@ app.get("/", (req, res) => {
         port: PORT,
         app: APP_NAME,
         env: process.env.NODE_ENV || "development",
-        message: "CI/CD with GitHub Actions is working. Pipeline test - v8"
+        message: "CI/CD with GitHub Actions is working. Pipeline test - v9"
     })
 })
 
