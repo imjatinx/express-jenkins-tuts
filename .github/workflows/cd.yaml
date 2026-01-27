@@ -56,8 +56,8 @@ jobs:
 
             echo "Discover GREEN port"
             GREEN_PORT=$(docker inspect \
-              -f '{{ (index (index .NetworkSettings.Ports "5000/tcp") 0).HostPort }}' \
-              express-green)
+            -f '{{ (index (index .NetworkSettings.Ports "5000/tcp") 0).HostPort }}' \
+            express-green)
 
             echo "GREEN is running on port $GREEN_PORT"
 
