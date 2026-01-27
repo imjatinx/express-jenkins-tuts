@@ -34,8 +34,8 @@ jobs:
             set -e
 
             IMAGE="ghcr.io/${{ github.repository_owner }}/express-app:${{ github.sha }}"
-            BLUE_PORT=5001
-            GREEN_PORT=5002
+            BLUE_PORT=5000
+            GREEN_PORT=5001
             NGINX_CONF="/etc/nginx/sites-available/express-app"
 
             echo "Login to GHCR"
