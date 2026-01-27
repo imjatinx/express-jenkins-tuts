@@ -48,6 +48,8 @@ jobs:
             docker run -d \
               --name express-green \
               -p 127.0.0.1:${GREEN_PORT}:5000 \
+              -e PORT=${{secrets.PORT}}
+              -e APP_NAME="CI-CD Express"
               -e NODE_ENV=production \
               $IMAGE
 

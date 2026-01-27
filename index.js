@@ -1,7 +1,7 @@
 import express from 'express'
 
 const app = express()
-const PORT = process.env.PORT || 8081
+const PORT = process.env.PORT || 5000
 const APP_NAME = process.env.APP_NAME || "Default Express App"
 
 app.get("/", (req, res) => {
